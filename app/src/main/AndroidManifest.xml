@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="id.co.myproject.madefinal">
+
+    <permission android:name="id.co.myproject.madefinal.READ_DATABASE"/>
+    <permission android:name="id.co.myproject.madefinal.WRITE_DATABASE"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".view.DetailActivity"
+            android:theme="@style/DetailTheme" />
+
+        <provider
+            android:authorities="id.co.myproject.madefinal"
+            android:name=".provider.CatalogueProvider"
+            android:exported="true"
+            android:readPermission="id.co.myproject.madefinal.READ_DATABASE"
+            android:writePermission="id.co.myproject.madefinal.WRITE_DATABASE"/>
+    </application>
+
+</manifest>

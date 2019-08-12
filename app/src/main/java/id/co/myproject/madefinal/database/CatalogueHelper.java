@@ -147,4 +147,32 @@ public class CatalogueHelper {
             return true;
         }
     }
+
+    public Cursor queryMovieProvider(){
+        return database.query(DATABASE_TABLE, null,
+                "type = 'movie'",
+                null,
+                null,
+                null,
+                _ID+" ASC",
+                null);
+    }
+
+    public Cursor queryTvProvider(){
+        return database.query(DATABASE_TABLE, null,
+                "type = 'tv'",
+                null,
+                null,
+                null,
+                _ID+" ASC",
+                null);
+    }
+
+    public long insertProvider(ContentValues values){
+        return database.insert(DATABASE_TABLE, null, values);
+    }
+
+    public int deleteProvider(String id, String type){
+        return database.delete(TABLE_CATALOGUE, ID+" = '"+id+"' and "+TYPE+" = '"+type+"'", null);
+    }
 }

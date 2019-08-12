@@ -1,0 +1,40 @@
+package id.co.myproject.madefinal.database;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import androidx.annotation.Nullable;
+
+public class DatabaseHelper extends SQLiteOpenHelper {
+    public static String DATABASE_NAME = "dbcatalogue";
+    public static final int DATABASE_VERSION = 1;
+    public static final String SQL_CREATE_TABLE_CATALOGUE = String.format("CREATE TABLE %s"
+            +"(%s INTEGER PRIMARY KEY AUTOINCREMENT, "
+            +" %s INTEGER NOT NULL, "
+            +" %s TEXT NOT NULL, "
+            +" %s TEXT NOT NULL, "
+            +" %s TEXT NOT NULL)",
+            DatabaseContract.TABLE_CATALOGUE,
+            DatabaseContract.CatalogueColumns._ID,
+            DatabaseContract.CatalogueColumns.ID,
+            DatabaseContract.CatalogueColumns.TITLE,
+            DatabaseContract.CatalogueColumns.POSTER,
+            DatabaseContract.CatalogueColumns.TYPE
+    );
+
+    public DatabaseHelper(@Nullable Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        sqLiteDatabase.execSQL(SQL_CREATE_TABLE_CATALOGUE);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+DatabaseContract.TABLE_CATALOGUE);
+        onCreate(sqLiteDatabase);
+    }
+}
