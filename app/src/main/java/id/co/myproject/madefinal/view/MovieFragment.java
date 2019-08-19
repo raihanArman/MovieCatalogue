@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ public class MovieFragment extends Fragment {
         recyclerView = view.findViewById(R.id.rv_movie);
         progressDialog = new ProgressDialog(getActivity());
         adapter = new MovieAdapter(getActivity());
-        progressDialog.setMessage("Cek");
+        progressDialog.setMessage(getString(R.string.cek));
         progressDialog.show();
 
         recyclerView.setVisibility(View.INVISIBLE);
@@ -66,18 +67,30 @@ public class MovieFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        movieModels.clear();
         movieViewModel = ViewModelProviders.of(this).get(MovieViewModel.class);
         movieViewModel.mLiveData().removeObservers(this);
         movieViewModel.mLiveData().observe(this, new Observer<MovieResults>() {
             @Override
             public void onChanged(MovieResults movieResults) {
-                progressDialog.dismiss();
-                recyclerView.setVisibility(View.VISIBLE);
-                List<Movie> models = movieResults.getMovieModels();
-                movieModels.addAll(models);
-                adapter.setMovieModelList(movieModels);
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
+                if (movieViewModel.mLiveData().getValue() != null) {
+                    progressDialog.dismiss();
+                    recyclerView.setVisibility(View.VISIBLE);
+                    List<Movie> models = movieResults.getMovieModels();
+                    movieModels.addAll(models);
+                    adapter.setMovieModelList(movieModels);
+                    recyclerView.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                }else {
+                    progressDialog.dismiss();
+                    Toast.makeText(getActivity(), getString(R.string.pesan_error), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

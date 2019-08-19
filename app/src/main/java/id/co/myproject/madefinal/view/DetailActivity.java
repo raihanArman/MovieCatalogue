@@ -2,6 +2,7 @@ package id.co.myproject.madefinal.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import id.co.myproject.madefinal.BuildConfig;
@@ -17,6 +18,8 @@ import id.co.myproject.madefinal.viewmodel.DetailTvViewModel;
 import id.co.myproject.madefinal.viewmodel.DetailTvViewModelFactory;
 
 import android.app.ProgressDialog;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -26,6 +29,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.CONTENT_URI;
+import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.ID;
+import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.POSTER;
+import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.TITLE;
+import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.TYPE;
 
 public class DetailActivity extends AppCompatActivity {
     public static final int EXTRAS_DETAIL_MOVIE = 1;
@@ -45,7 +54,7 @@ public class DetailActivity extends AppCompatActivity {
     DetailMovieViewModel viewModelMovie;
     DetailTvViewModel viewModelTv;
     CatalogueHelper helper;
-
+    CoordinatorLayout coordinatorLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +68,12 @@ public class DetailActivity extends AppCompatActivity {
         tvShowModel = new TvShow();
         helper = CatalogueHelper.getINSTANCE(this);
         helper.open();
+        coordinatorLayout = findViewById(R.id.layout);
+
+        coordinatorLayout.setVisibility(View.INVISIBLE);
 
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("cek");
+        progressDialog.setMessage(getResources().getString(R.string.cek));
         progressDialog.show();
 
         init();
@@ -92,17 +104,16 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void cekFavorite() {
+        ContentValues args = new ContentValues();
         if (detail == EXTRAS_DETAIL_MOVIE){
             if (helper.cekFavorite(id_movie, "movie")){
                 fb_favorit.setImageResource(R.drawable.ic_favorite_black_24dp);
                 fb_favorit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        long result = helper.deleteMovieTv(id_movie, "movie");
-                        if (result > 0){
-                            Toast.makeText(DetailActivity.this, "Menghapus", Toast.LENGTH_SHORT).show();
-                            fb_favorit.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                        }
+                        getContentResolver().delete(Uri.parse(CONTENT_URI+"/movie/"+id_movie), null, null);
+                        Toast.makeText(DetailActivity.this, getResources().getString(R.string.membatalkan_fav), Toast.LENGTH_SHORT).show();
+                        fb_favorit.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                     }
                 });
             }else {
@@ -110,11 +121,13 @@ public class DetailActivity extends AppCompatActivity {
                 fb_favorit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        long result = helper.insertMovie(movieModel);
-                        if (result > 0){
-                            Toast.makeText(DetailActivity.this, "Menambahkan", Toast.LENGTH_SHORT).show();
-                            fb_favorit.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_black_24dp));
-                        }
+                        args.put(ID, movieModel.getId());
+                        args.put(TITLE, movieModel.getTitle());
+                        args.put(POSTER, movieModel.getPosterPath());
+                        args.put(TYPE, "movie");
+                        getContentResolver().insert(Uri.parse(CONTENT_URI+"/movie"), args);
+                        Toast.makeText(DetailActivity.this, getResources().getString(R.string.menambah_fav), Toast.LENGTH_SHORT).show();
+                        fb_favorit.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_black_24dp));
                     }
                 });
             }
@@ -124,11 +137,9 @@ public class DetailActivity extends AppCompatActivity {
                 fb_favorit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        long result = helper.deleteMovieTv(id_tv, "tv");
-                        if (result > 0) {
-                            Toast.makeText(DetailActivity.this, "Menghapus", Toast.LENGTH_SHORT).show();
-                            fb_favorit.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                        }
+                        getContentResolver().delete(Uri.parse(CONTENT_URI+"/tv/"+id_tv), null, null);
+                        Toast.makeText(DetailActivity.this, getResources().getString(R.string.membatalkan_fav), Toast.LENGTH_SHORT).show();
+                        fb_favorit.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                     }
                 });
             }else {
@@ -136,11 +147,13 @@ public class DetailActivity extends AppCompatActivity {
                 fb_favorit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        long result = helper.insertTvShow(tvShowModel);
-                        if (result > 0){
-                            Toast.makeText(DetailActivity.this, "Menambahkan", Toast.LENGTH_SHORT).show();
-                            fb_favorit.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_black_24dp));
-                        }
+                        args.put(ID, tvShowModel.getId());
+                        args.put(TITLE, tvShowModel.getName());
+                        args.put(POSTER, tvShowModel.getPosterPath());
+                        args.put(TYPE, "tv");
+                        getContentResolver().insert(Uri.parse(CONTENT_URI+"/tv"), args);
+                        Toast.makeText(DetailActivity.this, getResources().getString(R.string.menambah_fav), Toast.LENGTH_SHORT).show();
+                        fb_favorit.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_black_24dp));
                     }
                 });
             }
@@ -150,12 +163,21 @@ public class DetailActivity extends AppCompatActivity {
     public void getDataTv(){
         DetailTvViewModelFactory factory = new DetailTvViewModelFactory(id_tv);
         viewModelTv = ViewModelProviders.of(this, factory).get(DetailTvViewModel.class);
+        if (viewModelTv.getDetailTv().hasObservers()) {
+            viewModelTv.getDetailTv().removeObservers(this);
+        }
         viewModelTv.getDetailTv().observe(this, new Observer<TvShow>() {
             @Override
             public void onChanged(TvShow tvShow) {
-                progressDialog.dismiss();
-                tvShowModel = tvShow;
-                getDetailTv(tvShow);
+                if (viewModelTv.getDetailTv().getValue() != null) {
+                    coordinatorLayout.setVisibility(View.VISIBLE);
+                    progressDialog.dismiss();
+                    tvShowModel = tvShow;
+                    getDetailTv(tvShow);
+                }else {
+                    progressDialog.dismiss();
+                    Toast.makeText(DetailActivity.this, getResources().getString(R.string.pesan_error), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -167,18 +189,31 @@ public class DetailActivity extends AppCompatActivity {
         tv_title.setText(tvShow.getName());
         tv_rating.setText(String.valueOf(tvShow.getRating()));
         tv_rilis.setVisibility(View.INVISIBLE);
-        tv_deskripsi.setText(tvShow.getOverview());
+        if(tvShow.getOverview().isEmpty()){
+            tv_deskripsi.setText(getString(R.string.description_empty));
+        }else {
+            tv_deskripsi.setText(tvShow.getOverview());
+        }
     }
 
     public void getDataMovie(){
         DetailMovieViewModelFactory factory = new DetailMovieViewModelFactory(id_movie);
         viewModelMovie = ViewModelProviders.of(this, factory).get(DetailMovieViewModel.class);
+        if (viewModelMovie.getDetailMovie().hasObservers()) {
+            viewModelMovie.getDetailMovie().removeObservers(this);
+        }
         viewModelMovie.getDetailMovie().observe(this, new Observer<Movie>() {
             @Override
             public void onChanged(Movie movie) {
-                progressDialog.dismiss();
-                movieModel = movie;
-                getDetailMovie(movie);
+                if (viewModelMovie.getDetailMovie().getValue() != null) {
+                    coordinatorLayout.setVisibility(View.VISIBLE);
+                    progressDialog.dismiss();
+                    movieModel = movie;
+                    getDetailMovie(movie);
+                }else {
+                    progressDialog.dismiss();
+                    Toast.makeText(DetailActivity.this, getResources().getString(R.string.pesan_error), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -187,18 +222,20 @@ public class DetailActivity extends AppCompatActivity {
         collapsingToolbarLayout.setTitle(movie.getTitle());
         Glide.with(DetailActivity.this).load(BuildConfig.BASE_URL_IMG+movie.getPosterPath()).into(iv_poster);
         Glide.with(DetailActivity.this).load(BuildConfig.BASE_URL_IMG+movie.getBackdropPath()).into(iv_poster_background);
-//                    Glide.with(DetailFilmActivity.this).load(BuildConfig.BASE_URL_IMG+movieModel.getPosterPath()).into(iv_film_card);
         tv_title.setText(movie.getTitle());
         tv_rating.setText(String.valueOf(movie.getVoteAvarage()));
         tv_rilis.setText(movie.getReleaseDate());
-        tv_deskripsi.setText(movie.getOverview());
+        if(movie.getOverview().isEmpty()){
+            tv_deskripsi.setText(getString(R.string.description_empty));
+        }else {
+            tv_deskripsi.setText(movie.getOverview());
+        }
     }
 
     private void init(){
         iv_poster = findViewById(R.id.iv_poster);
         iv_poster_background = findViewById(R.id.iv_poster_background);
         iv_back = findViewById(R.id.iv_back);
-//        iv_film_card = findViewById(R.id.iv_film_card);
         tv_rating = findViewById(R.id.tv_rating);
         tv_rilis = findViewById(R.id.tv_rilis);
         tv_title = findViewById(R.id.tv_title);

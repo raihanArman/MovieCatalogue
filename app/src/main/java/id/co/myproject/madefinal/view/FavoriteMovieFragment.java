@@ -79,7 +79,6 @@ public class FavoriteMovieFragment extends Fragment implements LoadDataMovieCall
             if (list != null)
                 adapter.setMovieModelList(list);
         }
-        Toast.makeText(getActivity(), "papapa", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -96,7 +95,7 @@ public class FavoriteMovieFragment extends Fragment implements LoadDataMovieCall
 
     @Override
     public void preExecute() {
-        progressDialog.setMessage("cek");
+        progressDialog.setMessage(getString(R.string.cek));
         progressDialog.show();
     }
 
@@ -144,21 +143,5 @@ public class FavoriteMovieFragment extends Fragment implements LoadDataMovieCall
     public void onDestroyView() {
         super.onDestroyView();
         helper.close();
-    }
-
-    public static class DataObserver extends ContentObserver {
-
-        final Context context;
-
-        public DataObserver(Handler handler, Context context) {
-            super(handler);
-            this.context = context;
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            super.onChange(selfChange);
-            new LoadMovieAsync(context, (LoadDataMovieCallback) context).execute();
-        }
     }
 }

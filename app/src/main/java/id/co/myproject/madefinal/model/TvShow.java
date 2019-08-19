@@ -11,7 +11,7 @@ public class TvShow implements Parcelable {
     @Expose
     private int id;
 
-    @SerializedName("name")
+    @SerializedName("original_name")
     @Expose
     private String name;
 

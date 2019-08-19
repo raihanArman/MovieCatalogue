@@ -11,6 +11,15 @@ import retrofit2.http.Query;
 
 public interface ApiRequest {
 
+
+    @GET("discover/movie")
+    Call<MovieResults> getReleaseMovie(
+            @Query("api_key") String apiKey,
+            @Query("primary_release.gte") String date,
+            @Query("primary_release_date.lte") String date_,
+            @Query("language") String language
+    );
+
     @GET("movie/popular")
     Call<MovieResults> getPopularMovie(
             @Query("api_key") String apiKey,
@@ -38,4 +47,17 @@ public interface ApiRequest {
             @Query("api_key") String apiKey,
             @Query("language") String language
     );
+
+    @GET("search/movie")
+    Call<MovieResults> getSearchMovie(
+            @Query("api_key") String apiKey,
+            @Query("query") String query
+    );
+
+    @GET("search/tv")
+    Call<TvShowResults> getSearchTv(
+        @Query("api_key") String apiKey,
+        @Query("query") String query
+    );
+
 }

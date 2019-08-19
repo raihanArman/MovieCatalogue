@@ -43,7 +43,7 @@ public class FavoriteFragment extends Fragment {
         tabLayout = view.findViewById(R.id.tab_layout);
         viewPager = view.findViewById(R.id.vp_tab);
 
-        FavoriteViewPager favoriteViewPager = new FavoriteViewPager(getChildFragmentManager());
+        FavoriteViewPager favoriteViewPager = new FavoriteViewPager(getChildFragmentManager(), getActivity());
 
         viewPager.setAdapter(favoriteViewPager);
         tabLayout.setupWithViewPager(viewPager);

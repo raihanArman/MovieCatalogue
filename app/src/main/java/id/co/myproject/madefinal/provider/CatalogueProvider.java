@@ -26,8 +26,8 @@ public class CatalogueProvider extends ContentProvider {
     static{
         sUriMatcher.addURI(AUTHORITY, TABLE_CATALOGUE+"/movie",CATALOGUE_MOVIE);
         sUriMatcher.addURI(AUTHORITY, TABLE_CATALOGUE+"/tv", CATALOGUE_TV);
-        sUriMatcher.addURI(AUTHORITY, TABLE_CATALOGUE+"/#", CATALOGUE_MOVIE_ID);
-        sUriMatcher.addURI(AUTHORITY, TABLE_CATALOGUE+"/#", CATALOGUE_TV_ID);
+        sUriMatcher.addURI(AUTHORITY, TABLE_CATALOGUE+"/movie/#", CATALOGUE_MOVIE_ID);
+        sUriMatcher.addURI(AUTHORITY, TABLE_CATALOGUE+"/tv/#", CATALOGUE_TV_ID);
     }
 
 
@@ -69,15 +69,17 @@ public class CatalogueProvider extends ContentProvider {
         long added;
         switch (sUriMatcher.match(uri)){
             case CATALOGUE_MOVIE:
+                added = helper.insertProvider(contentValues);
+                getContext().getContentResolver().notifyChange(Uri.parse(CONTENT_URI+"/movie"), null);
+                return Uri.parse(CONTENT_URI+"/movie/"+added);
             case CATALOGUE_TV :
                 added = helper.insertProvider(contentValues);
-                break;
+                getContext().getContentResolver().notifyChange(Uri.parse(CONTENT_URI+"/tv"), null);
+                return Uri.parse(CONTENT_URI+"/tv/"+added);
             default:
                 added = 0;
-                break;
+                return null;
         }
-        getContext().getContentResolver().notifyChange(CONTENT_URI, null);
-        return Uri.parse(CONTENT_URI+"/"+added);
     }
 
     @Override
@@ -87,15 +89,16 @@ public class CatalogueProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)){
             case CATALOGUE_MOVIE_ID:
                 deleted = helper.deleteProvider(uri.getLastPathSegment(), "movie");
+                getContext().getContentResolver().notifyChange(Uri.parse(CONTENT_URI+"/movie"), null);
                 break;
             case CATALOGUE_TV_ID:
                 deleted = helper.deleteProvider(uri.getLastPathSegment(), "tv");
+                getContext().getContentResolver().notifyChange(Uri.parse(CONTENT_URI+"/tv"), null);
                 break;
             default:
                 deleted = 0;
                 break;
         }
-        getContext().getContentResolver().notifyChange(CONTENT_URI, null);
         return deleted;
     }
 

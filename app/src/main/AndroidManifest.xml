@@ -2,9 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="id.co.myproject.madefinal">
 
-    <permission android:name="id.co.myproject.madefinal.READ_DATABASE"/>
-    <permission android:name="id.co.myproject.madefinal.WRITE_DATABASE"/>
-
+    <permission android:name="id.co.myproject.madefinal.READ_DATABASE" />
+    <permission android:name="id.co.myproject.madefinal.WRITE_DATABASE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -15,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".view.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -29,11 +31,39 @@
             android:theme="@style/DetailTheme" />
 
         <provider
-            android:authorities="id.co.myproject.madefinal"
             android:name=".provider.CatalogueProvider"
+            android:authorities="id.co.myproject.madefinal"
             android:exported="true"
             android:readPermission="id.co.myproject.madefinal.READ_DATABASE"
-            android:writePermission="id.co.myproject.madefinal.WRITE_DATABASE"/>
+            android:writePermission="id.co.myproject.madefinal.WRITE_DATABASE" />
+
+        <activity android:name=".view.MovieActivity" />
+        <activity android:name=".view.TvShowActivity" />
+
+        <receiver android:name=".widget.FavoriteWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/favorite_widget_info" />
+        </receiver>
+
+        <service
+            android:name=".widget.FavoriteWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <receiver android:name=".notif.MovieReleaseReceiver"
+            android:exported="false"
+            android:enabled="true"/>
+        <receiver android:name=".notif.DailyReceiver"
+            android:enabled="true"
+            android:exported="false"/>
+
+        <activity android:name=".notif.SettingActivity"></activity>
+
+
     </application>
 
 </manifest>

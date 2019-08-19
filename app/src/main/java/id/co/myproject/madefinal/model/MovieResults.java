@@ -1,5 +1,7 @@
 package id.co.myproject.madefinal.model;
 
+import android.database.Cursor;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

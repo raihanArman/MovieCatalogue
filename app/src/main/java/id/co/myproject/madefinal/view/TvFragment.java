@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ public class TvFragment extends Fragment {
         recyclerView = view.findViewById(R.id.rv_tv);
         progressDialog = new ProgressDialog(getActivity());
         adapter = new TvShowAdapter(getActivity());
-        progressDialog.setMessage("cek");
+        progressDialog.setMessage(getString(R.string.cek));
         progressDialog.show();
 
         recyclerView.setVisibility(View.INVISIBLE);
@@ -67,18 +68,24 @@ public class TvFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        tvShowList.clear();
         tvShowViewModel = ViewModelProviders.of(this).get(TvShowViewModel.class);
         tvShowViewModel.mLiveDataTv().removeObservers(this);
         tvShowViewModel.mLiveDataTv().observe(this, new Observer<TvShowResults>() {
             @Override
             public void onChanged(TvShowResults tvShowResults) {
-                progressDialog.dismiss();
-                recyclerView.setVisibility(View.VISIBLE);
-                List<TvShow> models = tvShowResults.getTvShowModels();
-                tvShowList.addAll(models);
-                adapter.setTvShows(tvShowList);
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
+                if (tvShowViewModel.mLiveDataTv().getValue() != null) {
+                    progressDialog.dismiss();
+                    recyclerView.setVisibility(View.VISIBLE);
+                    List<TvShow> models = tvShowResults.getTvShowModels();
+                    tvShowList.addAll(models);
+                    adapter.setTvShows(tvShowList);
+                    recyclerView.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                }else {
+                    progressDialog.dismiss();
+                    Toast.makeText(getActivity(), getString(R.string.pesan_error), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

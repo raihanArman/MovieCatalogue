@@ -91,7 +91,7 @@ public class FavoriteTvFragment extends Fragment implements LoadDataTvCallback {
 
     @Override
     public void preExecute() {
-        progressDialog.setMessage("cek");
+        progressDialog.setMessage(getString(R.string.cek));
         progressDialog.show();
     }
 

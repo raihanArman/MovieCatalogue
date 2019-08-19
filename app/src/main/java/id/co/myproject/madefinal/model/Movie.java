@@ -1,17 +1,24 @@
 package id.co.myproject.madefinal.model;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import id.co.myproject.madefinal.database.DatabaseContract;
+
+import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.ID;
+import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.POSTER;
+import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.TITLE;
+
 public class Movie implements Parcelable {
     @SerializedName("id")
     @Expose
     private int id;
 
-    @SerializedName("title")
+    @SerializedName("original_title")
     @Expose
     private String title;
 
@@ -34,6 +41,12 @@ public class Movie implements Parcelable {
     @SerializedName("overview")
     @Expose
     private String overview;
+
+    public Movie(Cursor cursor){
+        this.id = DatabaseContract.getColumnInt(cursor, ID);
+        this.title = DatabaseContract.getColumnString(cursor, TITLE);
+        this.posterPath = DatabaseContract.getColumnString(cursor, POSTER);
+    }
 
     public int getId() {
         return id;
@@ -90,7 +103,6 @@ public class Movie implements Parcelable {
     public void setBackdropPath(String backdropPath) {
         this.backdropPath = backdropPath;
     }
-
 
     @Override
     public int describeContents() {

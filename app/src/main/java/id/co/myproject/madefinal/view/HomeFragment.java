@@ -1,4 +1,4 @@
-package id.co.myproject.madefinal;
+package id.co.myproject.madefinal.view;
 
 
 import android.os.Bundle;
@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
+import id.co.myproject.madefinal.R;
 import id.co.myproject.madefinal.adapter.ViewPagerAdapter;
 
 import android.view.LayoutInflater;
@@ -42,7 +43,7 @@ public class HomeFragment extends Fragment {
         tabLayout = view.findViewById(R.id.tab_layout);
         viewPager = view.findViewById(R.id.vp_tab);
 
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager(), getActivity());
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);

@@ -1,25 +1,20 @@
-package id.co.myproject.madefinal;
+package id.co.myproject.madefinal.view;
 
-import android.content.Context;
-import android.database.ContentObserver;
+import android.content.Intent;
 import android.os.Bundle;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
-import android.os.Handler;
-import android.view.View;
 import com.google.android.material.navigation.NavigationView;
+
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import id.co.myproject.madefinal.view.FavoriteFragment;
+import id.co.myproject.madefinal.R;
+import id.co.myproject.madefinal.notif.SettingActivity;
 
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
@@ -34,7 +29,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setElevation(0.f);
+        getSupportActionBar().setTitle(getString(R.string.app_name));
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -56,6 +51,7 @@ public class MainActivity extends AppCompatActivity
         if (currentFragment == null){
             setFragment(new HomeFragment());
         }
+
     }
 
     @Override
@@ -68,28 +64,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -97,9 +71,22 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_fav) {
+            getSupportActionBar().setTitle("Favorite");
             setFragment(new FavoriteFragment());
         }else if (id == R.id.nav_home){
+            if (getSupportActionBar() != null)
+                getSupportActionBar().setTitle(getString(R.string.app_name));
             setFragment(new HomeFragment());
+        }else if (id == R.id.nav_movie){
+            Intent intent = new Intent(MainActivity.this, MovieActivity.class);
+            startActivity(intent);
+        }else if (id == R.id.nav_tv){
+            Intent intent = new Intent(MainActivity.this, TvShowActivity.class);
+            startActivity(intent);
+        }else if (id == R.id.nav_settings){
+            Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+            startActivity(intent);
+            item.setChecked(false);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -110,7 +97,8 @@ public class MainActivity extends AppCompatActivity
     private void setFragment(Fragment fragment){
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(frameLayout.getId(), fragment);
-        transaction.addToBackStack(null);
         transaction.commit();
     }
+
+
 }
