@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
@@ -25,7 +26,7 @@ import id.co.myproject.favoritecatalogue.adapter.TvShowAdapter;
 import id.co.myproject.favoritecatalogue.model.Movie;
 import id.co.myproject.favoritecatalogue.model.TvShow;
 
-import static id.co.myproject.favoritecatalogue.db.DatabaseContract.CatalogueColumns.CONTENT_URI;
+import static id.co.myproject.favoritecatalogue.db.DatabaseContract.CatalogueColumns.CONTENT_URI_TV;
 import static id.co.myproject.favoritecatalogue.util.MappingHelper.mapCursorMovie;
 import static id.co.myproject.favoritecatalogue.util.MappingHelper.mapCursorTv;
 
@@ -38,7 +39,8 @@ public class TvShowFragment extends Fragment implements LoadDataCallback {
     RecyclerView recyclerView;
     List<TvShow> tvShows;
     TvShowAdapter adapter;
-
+    TextView tvTvEmpty;
+    private static final String EXTRA_STATE = "EXTRA_STATE";
     public TvShowFragment() {
         // Required empty public constructor
     }
@@ -56,22 +58,39 @@ public class TvShowFragment extends Fragment implements LoadDataCallback {
         super.onViewCreated(view, savedInstanceState);
         tvShows = new ArrayList<>();
         recyclerView = view.findViewById(R.id.rv_fav_tv);
+        tvTvEmpty = view.findViewById(R.id.tv_tv_empty);
+        tvTvEmpty.setVisibility(View.INVISIBLE);
         adapter = new TvShowAdapter(getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
-        new getData(getActivity(), this).execute();
+        if (savedInstanceState == null){
+            new getData(getActivity(), this).execute();
+        }else {
+            ArrayList<TvShow> list = savedInstanceState.getParcelableArrayList(EXTRA_STATE);
+            if (list != null) {
+                tvTvEmpty.setVisibility(View.INVISIBLE);
+                adapter.setTvShowModelList(list);
+            }
+        }
     }
 
     @Override
     public void postExecute(Cursor cursor) {
         ArrayList<TvShow> listTvShow = mapCursorTv(cursor);
         if (listTvShow.size() > 0){
+            tvTvEmpty.setVisibility(View.INVISIBLE);
             adapter.setTvShowModelList(listTvShow);
         }else {
-            Toast.makeText(getActivity(), "Tidak Ada data saat ini", Toast.LENGTH_SHORT).show();
+            tvTvEmpty.setVisibility(View.VISIBLE);
             adapter.setTvShowModelList(new ArrayList<TvShow>());
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(EXTRA_STATE, adapter.getTvShowModelList());
     }
 
     private static class getData extends AsyncTask<Void, Void, Cursor>{
@@ -87,7 +106,7 @@ public class TvShowFragment extends Fragment implements LoadDataCallback {
         @Override
         protected Cursor doInBackground(Void... voids) {
             Context context = weakContext.get();
-            return context.getContentResolver().query(Uri.parse(CONTENT_URI+"/tv"), null, null, null, null);
+            return context.getContentResolver().query(Uri.parse(CONTENT_URI_TV+"/tv"), null, null, null, null);
         }
 
         @Override

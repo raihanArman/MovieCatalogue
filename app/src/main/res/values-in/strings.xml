@@ -26,12 +26,14 @@
     <string name="menambah_fav">Menambah Favorit</string>
     <string name="cari_movie">Cari Movie</string>
     <string name="cari_tv">Cari TV Show</string>
-    <string name="summary_release_reminder">Aktifkan/matikan pengingat film baru. Anda akan menerima pengingat harian film yang baru tayang pada pukul 7 pagi</string>
-    <string name="summary_daily_reminder">Aktifkan/matikan pegingat harian. Anda akan menerima pengingat harian pada pukul 8 pagi</string>
-    <string name="language">Language</string>
-    <string name="release_reminder">Release Reminder</string>
-    <string name="daily_reminder">Daily Reminder</string>
+    <string name="summary_release_reminder">Aktifkan/matikan pengingat film baru. Anda akan menerima pengingat harian film yang baru tayang pada pukul 8 pagi</string>
+    <string name="summary_daily_reminder">Aktifkan/matikan pegingat harian. Anda akan menerima pengingat harian pada pukul 7 pagi</string>
     <string name="language_select">Bahasa Indonesia</string>
     <string name="message_daily">Ayo cek Katalog Film untuk melihat info film terbaru</string>
     <string name="description_empty">Tidak tersedia dalam bahasa indonesia</string>
+    <string name="film_favorite_empty">Film favorit kososng</string>
+    <string name="tv_favorite_empty">Tv show favorit kosong</string>
+    <string name="language">Bahasa</string>
+    <string name="daily_reminder">Pengingat harian</string>
+    <string name="release_reminder">Film rilis</string>
 </resources>

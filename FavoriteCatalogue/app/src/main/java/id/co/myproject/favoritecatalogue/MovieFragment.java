@@ -16,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
@@ -25,7 +26,7 @@ import java.util.List;
 import id.co.myproject.favoritecatalogue.adapter.MovieAdapter;
 import id.co.myproject.favoritecatalogue.model.Movie;
 
-import static id.co.myproject.favoritecatalogue.db.DatabaseContract.CatalogueColumns.CONTENT_URI;
+import static id.co.myproject.favoritecatalogue.db.DatabaseContract.CatalogueColumns.CONTENT_URI_MOVIE;
 import static id.co.myproject.favoritecatalogue.util.MappingHelper.mapCursorMovie;
 
 
@@ -37,6 +38,8 @@ public class MovieFragment extends Fragment implements LoadDataCallback{
     RecyclerView recyclerView;
     List<Movie> movies;
     MovieAdapter adapter;
+    TextView tvMovieEmpty;
+    private static final String EXTRA_STATE = "EXTRA_STATE";
     public MovieFragment() {
         // Required empty public constructor
     }
@@ -54,20 +57,31 @@ public class MovieFragment extends Fragment implements LoadDataCallback{
         super.onViewCreated(view, savedInstanceState);
         movies = new ArrayList<>();
         recyclerView = view.findViewById(R.id.rv_fav_movie);
+        tvMovieEmpty = view.findViewById(R.id.tv_movie_empty);
+        tvMovieEmpty.setVisibility(View.INVISIBLE);
         adapter = new MovieAdapter(getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
-        new getData(getActivity(), this).execute();
+        if (savedInstanceState == null){
+            new getData(getActivity(), this).execute();
+        }else {
+            ArrayList<Movie> list = savedInstanceState.getParcelableArrayList(EXTRA_STATE);
+            if (list != null) {
+                tvMovieEmpty.setVisibility(View.INVISIBLE);
+                adapter.setMovieModelList(list);
+            }
+        }
     }
 
     @Override
     public void postExecute(Cursor cursor) {
         ArrayList<Movie> listMovie = mapCursorMovie(cursor);
         if (listMovie.size() > 0){
+            tvMovieEmpty.setVisibility(View.INVISIBLE);
             adapter.setMovieModelList(listMovie);
         }else {
-            Toast.makeText(getActivity(), "Tidak Ada data saat ini", Toast.LENGTH_SHORT).show();
+            tvMovieEmpty.setVisibility(View.VISIBLE);
             adapter.setMovieModelList(new ArrayList<Movie>());
         }
     }
@@ -85,7 +99,7 @@ public class MovieFragment extends Fragment implements LoadDataCallback{
         @Override
         protected Cursor doInBackground(Void... voids) {
             Context context = weakContext.get();
-            return context.getContentResolver().query(Uri.parse(CONTENT_URI+"/movie"), null, null, null, null);
+            return context.getContentResolver().query(Uri.parse(CONTENT_URI_MOVIE+"/movie"), null, null, null, null);
         }
 
         @Override
@@ -93,5 +107,11 @@ public class MovieFragment extends Fragment implements LoadDataCallback{
             super.onPostExecute(cursor);
             weakCallback.get().postExecute(cursor);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(EXTRA_STATE, adapter.getMovieModelList());
     }
 }

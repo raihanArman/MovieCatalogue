@@ -8,17 +8,13 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
-import android.widget.RemoteViews;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.Target;
-
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,7 +23,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
 
 import androidx.core.app.NotificationCompat;
 import id.co.myproject.madefinal.BuildConfig;
@@ -38,55 +33,34 @@ import id.co.myproject.madefinal.request.ApiRequest;
 import id.co.myproject.madefinal.request.RetrofitRequest;
 import id.co.myproject.madefinal.util.Language;
 import id.co.myproject.madefinal.view.DetailActivity;
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 import static id.co.myproject.madefinal.notif.DailyReceiver.CHANNEL_NAME;
 import static id.co.myproject.madefinal.view.DetailActivity.EXTRAS_DETAIL_MOVIE;
 
-public class MovieReleaseReceiver extends BroadcastReceiver{
+public class MovieReleaseReceiver extends BroadcastReceiver implements LoadDataRelease{
 
     public final static int NOTIFICATION_ID = 502;
     public static String CHANNEL_ID = "channel_01";
     public static final String TAG = MovieReleaseReceiver.class.getSimpleName();
     public static final String EXTRA_MESSAGE_RECIEVE = "messageRelease";
     public static final String EXTRA_TYPE_RECIEVE = "typeRelease";
-    Bitmap bitmapPoster;
 
-    public List<Movie> movieList = new ArrayList<>();
     Movie movie;
+
+    Context context;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        Date date = new Date();
-        String now = dateFormat.format(date);
-        ApiRequest apiRequest = RetrofitRequest.getRetrofitInstance().create(ApiRequest.class);
-        apiRequest.getReleaseMovie(BuildConfig.API_KEY, now, now, Language.getCountry())
-                .enqueue(new Callback<MovieResults>() {
-                    @Override
-                    public void onResponse(Call<MovieResults> call, Response<MovieResults> response) {
-                        if (response.isSuccessful()) {
-                            movieList = response.body().getMovieModels();
-                            Log.d(TAG, "movie list size:"+movieList.size());
-                            movie = new Movie();
-                            int index = new Random().nextInt(movieList.size());
-                            movie = movieList.get(index);
-                            String title = movie.getTitle();
-                            String message = movie.getOverview();
-                            sendNotification(context, title, message,NOTIFICATION_ID);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<MovieResults> call, Throwable t) {
-
-                    }
-                });
+        this.context = context;
+        new LoadMovieReleaseCallback(context, this).execute();
     }
 
-    private void sendNotification(Context context, String title, String desc, int id){
+    private void sendNotification(Context context,String title, String desc, int id){
+        String message = desc;
+        if (desc.isEmpty()){
+            message = context.getResources().getString(R.string.release_reminder);
+        }
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent intent = new Intent(context, DetailActivity.class);
         intent.putExtra("id_movie", movie.getId());
@@ -96,7 +70,7 @@ public class MovieReleaseReceiver extends BroadcastReceiver{
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
-                .setContentText(desc)
+                .setContentText(message)
                 .setContentIntent(pendingIntent)
                 .setVibrate(new long[]{1000,1000, 1000, 1000, 1000})
                 .setAutoCancel(true)
@@ -146,5 +120,56 @@ public class MovieReleaseReceiver extends BroadcastReceiver{
         Intent intent = new Intent(context, DailyReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, NOTIFICATION_ID, intent, 0);
         alarmManager.cancel(pendingIntent);
+    }
+
+
+    @Override
+    public void getMovieRelease(Movie movies) {
+        sendNotification(context, movies.getTitle(), movies.getOverview(),NOTIFICATION_ID);
+    }
+
+    private class LoadMovieReleaseCallback extends AsyncTask<Void, Void, Movie>{
+        private WeakReference<Context> weakContext;
+        private WeakReference<LoadDataRelease> weakRelease;
+
+        public LoadMovieReleaseCallback(Context context, LoadDataRelease callback){
+            this.weakContext = new WeakReference<>(context);
+            this.weakRelease = new WeakReference<>(callback);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            weakContext.get();
+        }
+
+        @Override
+        protected Movie doInBackground(Void... voids) {
+            List<Movie> movies = new ArrayList<>();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date date = new Date();
+            String now = dateFormat.format(date);
+            ApiRequest apiRequest = RetrofitRequest.getRetrofitInstance().create(ApiRequest.class);
+            try {
+                Response<MovieResults> response = apiRequest.getReleaseMovie(BuildConfig.API_KEY, now, now, Language.getCountry()).execute();
+                if (response.isSuccessful()){
+                    movies = response.body().getMovieModels();
+                    Log.d(TAG, "onResponse: list : "+movies.size());
+                    int index = new Random().nextInt(movies.size());
+                    movie = movies.get(index);
+                    Log.d(TAG, "doInBackground: movie title"+movie.getTitle());
+                    return movie;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Movie movies) {
+            super.onPostExecute(movies);
+            weakRelease.get().getMovieRelease(movies);
+        }
     }
 }

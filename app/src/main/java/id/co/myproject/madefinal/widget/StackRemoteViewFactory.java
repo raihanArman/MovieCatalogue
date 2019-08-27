@@ -21,7 +21,7 @@ import id.co.myproject.madefinal.R;
 import id.co.myproject.madefinal.model.Movie;
 import id.co.myproject.madefinal.model.MovieResults;
 
-import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.CONTENT_URI;
+import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.CONTENT_URI_MOVIE;
 import static id.co.myproject.madefinal.widget.FavoriteWidget.EXTRA_ITEM;
 
 public class StackRemoteViewFactory implements RemoteViewsService.RemoteViewsFactory {
@@ -38,13 +38,13 @@ public class StackRemoteViewFactory implements RemoteViewsService.RemoteViewsFac
 
     @Override
     public void onCreate() {
-        cursor = context.getContentResolver().query(Uri.parse(CONTENT_URI+"/movie"), null, null, null, null);
+        cursor = context.getContentResolver().query(Uri.parse(CONTENT_URI_MOVIE+"/movie"), null, null, null, null);
     }
 
     @Override
     public void onDataSetChanged() {
         final long token = Binder.clearCallingIdentity();
-        cursor = context.getContentResolver().query(Uri.parse(CONTENT_URI+"/movie"), null, null, null, null);
+        cursor = context.getContentResolver().query(Uri.parse(CONTENT_URI_MOVIE+"/movie"), null, null, null, null);
         Binder.restoreCallingIdentity(token);
     }
 

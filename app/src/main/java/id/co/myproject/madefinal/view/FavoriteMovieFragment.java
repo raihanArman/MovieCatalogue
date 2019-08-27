@@ -18,6 +18,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
@@ -32,7 +33,7 @@ import id.co.myproject.madefinal.database.CatalogueHelper;
 import id.co.myproject.madefinal.database.LoadDataMovieCallback;
 import id.co.myproject.madefinal.model.Movie;
 
-import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.CONTENT_URI;
+import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.CONTENT_URI_MOVIE;
 import static id.co.myproject.madefinal.util.MappingHelper.mapCursorMovie;
 
 /**
@@ -44,6 +45,7 @@ public class FavoriteMovieFragment extends Fragment implements LoadDataMovieCall
     ProgressDialog progressDialog;
     FavoriteMovieAdapter adapter;
     CatalogueHelper helper;
+    TextView tvMovieEmpty;
     private static final String EXTRA_STATE = "EXTRA_STATE";
 
     public FavoriteMovieFragment() {
@@ -63,9 +65,11 @@ public class FavoriteMovieFragment extends Fragment implements LoadDataMovieCall
         super.onViewCreated(view, savedInstanceState);
         progressDialog = new ProgressDialog(getActivity());
         recyclerView = view.findViewById(R.id.rv_fav_movie);
+        tvMovieEmpty = view.findViewById(R.id.tv_movie_empty);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
 
+        tvMovieEmpty.setVisibility(View.INVISIBLE);
         helper = CatalogueHelper.getINSTANCE(getActivity());
         helper.open();
 
@@ -76,8 +80,10 @@ public class FavoriteMovieFragment extends Fragment implements LoadDataMovieCall
             new LoadMovieAsync(getActivity(), this).execute();
         }else {
             ArrayList<Movie> list = savedInstanceState.getParcelableArrayList(EXTRA_STATE);
-            if (list != null)
+            if (list != null) {
+                tvMovieEmpty.setVisibility(View.INVISIBLE);
                 adapter.setMovieModelList(list);
+            }
         }
     }
 
@@ -104,8 +110,10 @@ public class FavoriteMovieFragment extends Fragment implements LoadDataMovieCall
         progressDialog.dismiss();
         List<Movie> listMovie = mapCursorMovie(cursor);
         if (listMovie.size() > 0){
+            tvMovieEmpty.setVisibility(View.INVISIBLE);
             adapter.setMovieModelList(listMovie);
         }else {
+            tvMovieEmpty.setVisibility(View.VISIBLE);
             adapter.setMovieModelList(new ArrayList<Movie>());
         }
     }
@@ -129,7 +137,7 @@ public class FavoriteMovieFragment extends Fragment implements LoadDataMovieCall
         @Override
         protected Cursor doInBackground(Void... voids) {
             Context context = weakContext.get();
-            return context.getContentResolver().query(Uri.parse(CONTENT_URI+"/movie"), null, null, null, null);
+            return context.getContentResolver().query(Uri.parse(CONTENT_URI_MOVIE+"/movie"), null, null, null, null);
         }
 
         @Override

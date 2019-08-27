@@ -18,6 +18,7 @@ public class MovieRepository {
     }
 
 
+
     public MovieRepository(int id){
         NetworkCall.fetchDetailMovie(id, BuildConfig.API_KEY, Language.getCountry());
     }
@@ -31,4 +32,5 @@ public class MovieRepository {
         dataDetailMovie = NetworkCall.getDataDetailMovie();
         return dataDetailMovie;
     }
+
 }

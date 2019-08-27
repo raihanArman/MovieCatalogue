@@ -30,8 +30,9 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.CONTENT_URI;
-import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.ID;
+import static android.provider.BaseColumns._ID;
+import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.CONTENT_URI_MOVIE;
+import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.CONTENT_URI_TV;
 import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.POSTER;
 import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.TITLE;
 import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.TYPE;
@@ -106,12 +107,12 @@ public class DetailActivity extends AppCompatActivity {
     private void cekFavorite() {
         ContentValues args = new ContentValues();
         if (detail == EXTRAS_DETAIL_MOVIE){
-            if (helper.cekFavorite(id_movie, "movie")){
+            if (helper.cekFavoriteMovie(id_movie)){
                 fb_favorit.setImageResource(R.drawable.ic_favorite_black_24dp);
                 fb_favorit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        getContentResolver().delete(Uri.parse(CONTENT_URI+"/movie/"+id_movie), null, null);
+                        getContentResolver().delete(Uri.parse(CONTENT_URI_MOVIE+"/movie/"+id_movie), null, null);
                         Toast.makeText(DetailActivity.this, getResources().getString(R.string.membatalkan_fav), Toast.LENGTH_SHORT).show();
                         fb_favorit.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                     }
@@ -121,23 +122,22 @@ public class DetailActivity extends AppCompatActivity {
                 fb_favorit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        args.put(ID, movieModel.getId());
+                        args.put(_ID, movieModel.getId());
                         args.put(TITLE, movieModel.getTitle());
                         args.put(POSTER, movieModel.getPosterPath());
-                        args.put(TYPE, "movie");
-                        getContentResolver().insert(Uri.parse(CONTENT_URI+"/movie"), args);
+                        getContentResolver().insert(Uri.parse(CONTENT_URI_MOVIE+"/movie"), args);
                         Toast.makeText(DetailActivity.this, getResources().getString(R.string.menambah_fav), Toast.LENGTH_SHORT).show();
                         fb_favorit.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_black_24dp));
                     }
                 });
             }
         }else if (detail == EXTRAS_DETAIL_TV){
-            if (helper.cekFavorite(id_tv, "tv")){
+            if (helper.cekFavoriteTV(id_tv)){
                 fb_favorit.setImageResource(R.drawable.ic_favorite_black_24dp);
                 fb_favorit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        getContentResolver().delete(Uri.parse(CONTENT_URI+"/tv/"+id_tv), null, null);
+                        getContentResolver().delete(Uri.parse(CONTENT_URI_TV+"/tv/"+id_tv), null, null);
                         Toast.makeText(DetailActivity.this, getResources().getString(R.string.membatalkan_fav), Toast.LENGTH_SHORT).show();
                         fb_favorit.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                     }
@@ -147,11 +147,10 @@ public class DetailActivity extends AppCompatActivity {
                 fb_favorit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        args.put(ID, tvShowModel.getId());
+                        args.put(_ID, tvShowModel.getId());
                         args.put(TITLE, tvShowModel.getName());
                         args.put(POSTER, tvShowModel.getPosterPath());
-                        args.put(TYPE, "tv");
-                        getContentResolver().insert(Uri.parse(CONTENT_URI+"/tv"), args);
+                        getContentResolver().insert(Uri.parse(CONTENT_URI_TV+"/tv"), args);
                         Toast.makeText(DetailActivity.this, getResources().getString(R.string.menambah_fav), Toast.LENGTH_SHORT).show();
                         fb_favorit.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_black_24dp));
                     }

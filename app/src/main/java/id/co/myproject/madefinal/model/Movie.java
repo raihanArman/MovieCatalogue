@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 
 import id.co.myproject.madefinal.database.DatabaseContract;
 
-import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.ID;
+import static android.provider.BaseColumns._ID;
 import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.POSTER;
 import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.TITLE;
 
@@ -43,7 +43,7 @@ public class Movie implements Parcelable {
     private String overview;
 
     public Movie(Cursor cursor){
-        this.id = DatabaseContract.getColumnInt(cursor, ID);
+        this.id = DatabaseContract.getColumnInt(cursor, _ID);
         this.title = DatabaseContract.getColumnString(cursor, TITLE);
         this.posterPath = DatabaseContract.getColumnString(cursor, POSTER);
     }

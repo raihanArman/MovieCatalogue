@@ -43,7 +43,7 @@ public class DetailActivity extends AppCompatActivity {
         tvShowModel = new TvShow();
 
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("cek");
+        progressDialog.setMessage(getString(R.string.cek));
         progressDialog.show();
 
         init();
@@ -94,7 +94,11 @@ public class DetailActivity extends AppCompatActivity {
         tv_title.setText(tvShow.getName());
         tv_rating.setText(String.valueOf(tvShow.getRating()));
         tv_rilis.setVisibility(View.INVISIBLE);
-        tv_deskripsi.setText(tvShow.getOverview());
+        if (tvShow.getOverview().isEmpty()){
+            tv_deskripsi.setText(getString(R.string.description_empty));
+        }else {
+            tv_deskripsi.setText(tvShow.getOverview());
+        }
     }
 
     private void getDataMovie() {
@@ -122,7 +126,11 @@ public class DetailActivity extends AppCompatActivity {
         tv_title.setText(movie.getTitle());
         tv_rating.setText(String.valueOf(movie.getVoteAvarage()));
         tv_rilis.setText(movie.getReleaseDate());
-        tv_deskripsi.setText(movie.getOverview());
+        if (movie.getOverview().isEmpty()){
+            tv_deskripsi.setText(R.string.description_empty);
+        }else {
+            tv_deskripsi.setText(movie.getOverview());
+        }
     }
 
 

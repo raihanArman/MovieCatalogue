@@ -12,8 +12,10 @@ import androidx.annotation.Nullable;
 import id.co.myproject.madefinal.database.CatalogueHelper;
 
 import static id.co.myproject.madefinal.database.DatabaseContract.AUTHORITY;
-import static id.co.myproject.madefinal.database.DatabaseContract.TABLE_CATALOGUE;
-import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.CONTENT_URI;
+import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.CONTENT_URI_MOVIE;
+import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.CONTENT_URI_TV;
+import static id.co.myproject.madefinal.database.DatabaseContract.TABLE_MOVIE;
+import static id.co.myproject.madefinal.database.DatabaseContract.TABLE_TV;
 
 public class CatalogueProvider extends ContentProvider {
     private static final int CATALOGUE_MOVIE = 1;
@@ -24,10 +26,10 @@ public class CatalogueProvider extends ContentProvider {
     private CatalogueHelper helper;
 
     static{
-        sUriMatcher.addURI(AUTHORITY, TABLE_CATALOGUE+"/movie",CATALOGUE_MOVIE);
-        sUriMatcher.addURI(AUTHORITY, TABLE_CATALOGUE+"/tv", CATALOGUE_TV);
-        sUriMatcher.addURI(AUTHORITY, TABLE_CATALOGUE+"/movie/#", CATALOGUE_MOVIE_ID);
-        sUriMatcher.addURI(AUTHORITY, TABLE_CATALOGUE+"/tv/#", CATALOGUE_TV_ID);
+        sUriMatcher.addURI(AUTHORITY, TABLE_MOVIE+"/movie",CATALOGUE_MOVIE);
+        sUriMatcher.addURI(AUTHORITY, TABLE_TV+"/tv", CATALOGUE_TV);
+        sUriMatcher.addURI(AUTHORITY, TABLE_MOVIE+"/movie/#", CATALOGUE_MOVIE_ID);
+        sUriMatcher.addURI(AUTHORITY, TABLE_TV+"/tv/#", CATALOGUE_TV_ID);
     }
 
 
@@ -69,13 +71,13 @@ public class CatalogueProvider extends ContentProvider {
         long added;
         switch (sUriMatcher.match(uri)){
             case CATALOGUE_MOVIE:
-                added = helper.insertProvider(contentValues);
-                getContext().getContentResolver().notifyChange(Uri.parse(CONTENT_URI+"/movie"), null);
-                return Uri.parse(CONTENT_URI+"/movie/"+added);
+                added = helper.insertProviderMovie(contentValues);
+                getContext().getContentResolver().notifyChange(Uri.parse(CONTENT_URI_MOVIE+"/movie"), null);
+                return Uri.parse(CONTENT_URI_MOVIE+"/movie/"+added);
             case CATALOGUE_TV :
-                added = helper.insertProvider(contentValues);
-                getContext().getContentResolver().notifyChange(Uri.parse(CONTENT_URI+"/tv"), null);
-                return Uri.parse(CONTENT_URI+"/tv/"+added);
+                added = helper.insertProviderTV(contentValues);
+                getContext().getContentResolver().notifyChange(Uri.parse(CONTENT_URI_TV+"/tv"), null);
+                return Uri.parse(CONTENT_URI_TV+"/tv/"+added);
             default:
                 added = 0;
                 return null;
@@ -88,12 +90,12 @@ public class CatalogueProvider extends ContentProvider {
         int deleted;
         switch (sUriMatcher.match(uri)){
             case CATALOGUE_MOVIE_ID:
-                deleted = helper.deleteProvider(uri.getLastPathSegment(), "movie");
-                getContext().getContentResolver().notifyChange(Uri.parse(CONTENT_URI+"/movie"), null);
+                deleted = helper.deleteProviderMovie(uri.getLastPathSegment());
+                getContext().getContentResolver().notifyChange(Uri.parse(CONTENT_URI_MOVIE+"/movie"), null);
                 break;
             case CATALOGUE_TV_ID:
-                deleted = helper.deleteProvider(uri.getLastPathSegment(), "tv");
-                getContext().getContentResolver().notifyChange(Uri.parse(CONTENT_URI+"/tv"), null);
+                deleted = helper.deleteProviderTV(uri.getLastPathSegment());
+                getContext().getContentResolver().notifyChange(Uri.parse(CONTENT_URI_TV+"/tv"), null);
                 break;
             default:
                 deleted = 0;

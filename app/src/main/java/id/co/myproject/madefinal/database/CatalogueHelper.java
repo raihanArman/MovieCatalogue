@@ -15,15 +15,16 @@ import id.co.myproject.madefinal.model.Movie;
 import id.co.myproject.madefinal.model.TvShow;
 
 import static android.provider.BaseColumns._ID;
-import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.ID;
 import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.POSTER;
 import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.TITLE;
 import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.TYPE;
-import static id.co.myproject.madefinal.database.DatabaseContract.TABLE_CATALOGUE;
+import static id.co.myproject.madefinal.database.DatabaseContract.TABLE_MOVIE;
+import static id.co.myproject.madefinal.database.DatabaseContract.TABLE_TV;
 
 public class CatalogueHelper {
     public static final String TAG = CatalogueHelper.class.getSimpleName();
-    public static final String DATABASE_TABLE = TABLE_CATALOGUE;
+    public static final String DATABASE_TABLE_MOVIE = TABLE_MOVIE;
+    public static final String DATABASE_TABLE_TV = TABLE_TV;
     public static DatabaseHelper databaseHelper;
     private static CatalogueHelper INSTANCE;
 
@@ -57,9 +58,28 @@ public class CatalogueHelper {
         }
     }
 
-    public boolean cekFavorite(int id_movie, String type){
-        String args = ID+" = "+id_movie+" and "+TYPE+" = '"+type+"'";
-        Cursor cursor = database.query(DATABASE_TABLE, null,
+    public boolean cekFavoriteMovie(int id_movie){
+        String args = _ID+" = "+id_movie;
+        Cursor cursor = database.query(DATABASE_TABLE_MOVIE, null,
+                args,
+                null,
+                null,
+                null,
+                null,
+                null);
+        cursor.moveToFirst();
+        if (cursor.getCount() <= 0){
+            cursor.close();
+            return false;
+        }else {
+            cursor.close();
+            return true;
+        }
+    }
+
+    public boolean cekFavoriteTV(int id_tv){
+        String args = _ID+" = "+id_tv;
+        Cursor cursor = database.query(DATABASE_TABLE_TV, null,
                 args,
                 null,
                 null,
@@ -77,8 +97,8 @@ public class CatalogueHelper {
     }
 
     public Cursor queryMovieProvider(){
-        return database.query(DATABASE_TABLE, null,
-                "type = 'movie'",
+        return database.query(DATABASE_TABLE_MOVIE, null,
+                null,
                 null,
                 null,
                 null,
@@ -87,8 +107,8 @@ public class CatalogueHelper {
     }
 
     public Cursor queryTvProvider(){
-        return database.query(DATABASE_TABLE, null,
-                "type = 'tv'",
+        return database.query(DATABASE_TABLE_TV, null,
+                null,
                 null,
                 null,
                 null,
@@ -96,11 +116,19 @@ public class CatalogueHelper {
                 null);
     }
 
-    public long insertProvider(ContentValues values){
-        return database.insert(DATABASE_TABLE, null, values);
+    public long insertProviderMovie(ContentValues values){
+        return database.insert(DATABASE_TABLE_MOVIE, null, values);
     }
 
-    public int deleteProvider(String id, String type){
-        return database.delete(TABLE_CATALOGUE, ID+" = '"+id+"' and "+TYPE+" = '"+type+"'", null);
+    public long insertProviderTV(ContentValues values){
+        return database.insert(DATABASE_TABLE_TV, null, values);
+    }
+
+    public int deleteProviderMovie(String id){
+        return database.delete(TABLE_MOVIE, _ID+" = '"+id+"'", null);
+    }
+
+    public int deleteProviderTV(String id){
+        return database.delete(TABLE_TV, _ID+" = '"+id+"'", null);
     }
 }

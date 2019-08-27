@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
@@ -30,7 +31,7 @@ import id.co.myproject.madefinal.database.LoadDataTvCallback;
 import id.co.myproject.madefinal.model.Movie;
 import id.co.myproject.madefinal.model.TvShow;
 
-import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.CONTENT_URI;
+import static id.co.myproject.madefinal.database.DatabaseContract.CatalogueColumns.CONTENT_URI_TV;
 import static id.co.myproject.madefinal.util.MappingHelper.mapCursorMovie;
 import static id.co.myproject.madefinal.util.MappingHelper.mapCursorTv;
 
@@ -43,6 +44,7 @@ public class FavoriteTvFragment extends Fragment implements LoadDataTvCallback {
     ProgressDialog progressDialog;
     FavoriteTvAdapter adapter;
     CatalogueHelper helper;
+    TextView tvTvEmpty;
     private static final String EXTRA_STATE = "EXTRA_STATE";
 
 
@@ -63,6 +65,8 @@ public class FavoriteTvFragment extends Fragment implements LoadDataTvCallback {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.rv_fav_tv);
         progressDialog = new ProgressDialog(getActivity());
+        tvTvEmpty = view.findViewById(R.id.tv_tv_empty);
+        tvTvEmpty.setVisibility(View.INVISIBLE);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
 
@@ -76,7 +80,8 @@ public class FavoriteTvFragment extends Fragment implements LoadDataTvCallback {
             new LoadTvAsync(getActivity(), this).execute();
         }else {
             ArrayList<TvShow> list = savedInstanceState.getParcelableArrayList(EXTRA_STATE);
-            if (list != null){
+            if (list != null) {
+                tvTvEmpty.setVisibility(View.INVISIBLE);
                 adapter.setTvShowModelArrayList(list);
             }
         }
@@ -100,8 +105,10 @@ public class FavoriteTvFragment extends Fragment implements LoadDataTvCallback {
         progressDialog.dismiss();
         ArrayList<TvShow> listTv = mapCursorTv(cursor);
         if (listTv.size() > 0){
+            tvTvEmpty.setVisibility(View.INVISIBLE);
             adapter.setTvShowModelArrayList(listTv);
         }else {
+            tvTvEmpty.setVisibility(View.VISIBLE);
             adapter.setTvShowModelArrayList(new ArrayList<TvShow>());
         }
     }
@@ -125,7 +132,7 @@ public class FavoriteTvFragment extends Fragment implements LoadDataTvCallback {
         @Override
         protected Cursor doInBackground(Void... voids) {
             Context context = weakContext.get();
-            return context.getContentResolver().query(Uri.parse(CONTENT_URI+"/tv"), null, null, null, null);
+            return context.getContentResolver().query(Uri.parse(CONTENT_URI_TV+"/tv"), null, null, null, null);
         }
 
         @Override

@@ -13,16 +13,20 @@ public class DatabaseContract {
 
     }
 
-    public static String TABLE_CATALOGUE = "catalogue";
+    public static String TABLE_MOVIE = "movie_favorite";
+    public static String TABLE_TV = "tv_favorite";
     public static final class CatalogueColumns implements BaseColumns{
-        public static String ID = "id_catalogue";
         public static String TITLE = "title";
         public static String POSTER = "poster_path";
         public static String TYPE = "type";
 
-        public static final Uri CONTENT_URI = new Uri.Builder().scheme(SCHEME)
+        public static final Uri CONTENT_URI_MOVIE = new Uri.Builder().scheme(SCHEME)
                 .authority(AUTHORITY)
-                .appendPath(TABLE_CATALOGUE)
+                .appendPath(TABLE_MOVIE)
+                .build();
+        public static final Uri CONTENT_URI_TV = new Uri.Builder().scheme(SCHEME)
+                .authority(AUTHORITY)
+                .appendPath(TABLE_TV)
                 .build();
     }
 

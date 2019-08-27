@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FavoriteCatalogue</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="movie">Film</string>
+    <string name="tv">Acara TV</string>
+    <string name="description_empty">Tidak tersedia dalam bahasa indonesia</string>
+    <string name="cek">Mengambil data</string>
+    <string name="film_favorite_empty">Film favorit kososng</string>
+    <string name="tv_favorite_empty">Tv show favorit kosong</string>
+</resources>

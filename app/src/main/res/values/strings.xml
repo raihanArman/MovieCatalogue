@@ -27,12 +27,14 @@
     <string name="cari_movie">Search Movie</string>
     <string name="cari_tv">Search TV Show</string>
 
-    <string name="summary_release_reminder">Turn on/off new movie release reminder. You will receive daily movie release info at 7AM</string>
-    <string name="summary_daily_reminder">Turn on/off daily reminder. You will receive daily reminder at 8AM</string>
-    <string name="language">Language</string>
-    <string name="release_reminder">Release Reminder</string>
-    <string name="daily_reminder">Daily Reminder</string>
+    <string name="summary_release_reminder">Turn on/off new movie release reminder. You will receive daily movie release info at 8AM</string>
+    <string name="summary_daily_reminder">Turn on/off daily reminder. You will receive daily reminder at 7AM</string>
     <string name="language_select">English</string>
     <string name="message_daily">Let\'s check Catalogue Movie to get new movies info</string>
     <string name="description_empty">Not available in english</string>
+    <string name="film_favorite_empty">Movie favorite is empty</string>
+    <string name="tv_favorite_empty">Tv show favorite is empty</string>
+    <string name="language">Language</string>
+    <string name="daily_reminder">Daily reminder</string>
+    <string name="release_reminder">Release reminder</string>
 </resources>

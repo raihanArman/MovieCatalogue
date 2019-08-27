@@ -15,7 +15,7 @@ public interface ApiRequest {
     @GET("discover/movie")
     Call<MovieResults> getReleaseMovie(
             @Query("api_key") String apiKey,
-            @Query("primary_release.gte") String date,
+            @Query("primary_release_date.gte") String date,
             @Query("primary_release_date.lte") String date_,
             @Query("language") String language
     );

@@ -1,10 +1,14 @@
 package id.co.myproject.madefinal.util;
 
 import android.database.Observable;
+import android.util.Log;
+
+import java.util.Random;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import id.co.myproject.madefinal.BuildConfig;
 import id.co.myproject.madefinal.model.Movie;
 import id.co.myproject.madefinal.model.TvShow;
 import id.co.myproject.madefinal.request.ApiRequest;
@@ -95,6 +99,7 @@ public class NetworkCall {
                     }
                 });
     }
+
 
     public static LiveData<MovieResults> getData(){
         return data;
